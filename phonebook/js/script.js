@@ -1,25 +1,26 @@
 'use strict';
-const data = [{
-  name: 'Иван',
-  surname: 'Петров',
-  phone: '+79514545454',
-},
-{
-  name: 'Игорь',
-  surname: 'Семёнов',
-  phone: '+79999999999',
-},
-{
-  name: 'Семён',
-  surname: 'Иванов',
-  phone: '+79800252525',
-},
-{
-  name: 'Мария',
-  surname: 'Попова',
-  phone: '+79876543210',
-},
-];
+
+// const data = [{
+//     name: 'Иван',
+//     surname: 'Петров',
+//     phone: '+79514545454',
+//   },
+//   {
+//     name: 'Игорь',
+//     surname: 'Семёнов',
+//     phone: '+79999999999',
+//   },
+//   {
+//     name: 'Семён',
+//     surname: 'Иванов',
+//     phone: '+79800252525',
+//   },
+//   {
+//     name: 'Мария',
+//     surname: 'Попова',
+//     phone: '+79876543210',
+//   },
+// ];
 
 
 {
@@ -94,6 +95,7 @@ const data = [{
       <th>Имя</th>
       <th>Фамилия</th>
       <th>Телефон</th>
+      <th></th>
     </tr>
     `);
 
@@ -103,7 +105,6 @@ const data = [{
 
     return table;
   };
-
 
   const createForm = () => {
     const overlay = document.createElement('div');
@@ -192,6 +193,10 @@ const data = [{
 
     return {
       list: table.tbody,
+      logo,
+      btnAdd: buttonGroup.btns[0],
+      formOverlay: form.overlay,
+      form: form.form,
     };
   };
 
@@ -216,10 +221,25 @@ const data = [{
     const phoneLink = document.createElement('a');
     phoneLink.href = `tel: ${phone}`;
     phoneLink.textContent = phone;
+    tr.phoneLink = phoneLink;
 
     tdPhone.append(phoneLink);
 
-    tr.append(tdDel, tdName, tdSurname, tdPhone);
+    const tdEdit = document.createElement('td'); // button edit
+    // const btnEdit = document.createElement('button');
+    // btnEdit.textContent = 'Редактировать';
+    // btnEdit.classList.add('btn', 'btn-danger');
+    // btnEdit.setAttribute('type', 'button');
+
+    const btnEdit = createButtonsGroup([{
+      className: 'btn btn-dark btn-sm',
+      type: 'button',
+      text: 'Редактировать',
+    }]);
+
+    tdEdit.append(...btnEdit.btns);
+
+    tr.append(tdDel, tdName, tdSurname, tdPhone, tdEdit);
 
     return tr;
   };
@@ -227,6 +247,20 @@ const data = [{
   const renderContacts = (elem, data) => {
     const allRow = data.map(createRow);
     elem.append(...allRow);
+    return allRow;
+  };
+
+  const hoverRow = (allRow, logo) => {
+    const text = logo.textContent;
+
+    allRow.forEach(contact => {
+      contact.addEventListener('mouseenter', () => {
+        logo.textContent = contact.phoneLink.textContent;
+      });
+      contact.addEventListener('mouseleave', () => {
+        logo.textContent = text;
+      });
+    });
   };
 
   const init = (selectorApp, title) => {
@@ -235,10 +269,29 @@ const data = [{
 
     const {
       list,
+      logo,
+      btnAdd,
+      formOverlay,
+      form,
     } = phoneBook;
 
-    renderContacts(list, data);
     // Функционал
+
+    const allRow = renderContacts(list, data);
+
+    hoverRow(allRow, logo);
+
+    btnAdd.addEventListener('click', () => {
+      formOverlay.classList.add('is-visible');
+    });
+
+    form.addEventListener('click', event => {
+      event.stopPropagation();
+    });
+
+    formOverlay.addEventListener('click', () => {
+      formOverlay.classList.remove('is-visible');
+    });
   };
 
   window.phoneBookInit = init;
