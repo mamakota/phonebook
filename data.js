@@ -1,5 +1,4 @@
-const data = [
-  {
+const data = [{
     name: 'Иван',
     surname: 'Петров',
     phone: '+79514545454',
