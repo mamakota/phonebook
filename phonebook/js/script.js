@@ -1,26 +1,26 @@
 'use strict';
 
-// const data = [{
-//     name: 'Иван',
-//     surname: 'Петров',
-//     phone: '+79514545454',
-//   },
-//   {
-//     name: 'Игорь',
-//     surname: 'Семёнов',
-//     phone: '+79999999999',
-//   },
-//   {
-//     name: 'Семён',
-//     surname: 'Иванов',
-//     phone: '+79800252525',
-//   },
-//   {
-//     name: 'Мария',
-//     surname: 'Попова',
-//     phone: '+79876543210',
-//   },
-// ];
+const data = [{
+    name: 'Иван',
+    surname: 'Петров',
+    phone: '+79514545454',
+  },
+  {
+    name: 'Игорь',
+    surname: 'Семёнов',
+    phone: '+79999999999',
+  },
+  {
+    name: 'Семён',
+    surname: 'Иванов',
+    phone: '+79800252525',
+  },
+  {
+    name: 'Мария',
+    surname: 'Попова',
+    phone: '+79876543210',
+  },
+];
 
 
 {
@@ -92,8 +92,8 @@
     thead.insertAdjacentHTML('beforeend', `
     <tr>
       <th class="delete">Удалить</th>
-      <th>Имя</th>
-      <th>Фамилия</th>
+      <th data-sort="1">Имя</th>
+      <th data-sort="2">Фамилия</th>
       <th>Телефон</th>
       <th></th>
     </tr>
@@ -198,6 +198,7 @@
       btnDel: buttonGroup.btns[1],
       formOverlay: form.overlay,
       form: form.form,
+      table,
     };
   };
 
@@ -265,6 +266,12 @@
     });
   };
 
+  const sortData = (datasort) => {
+    const table = document.querySelector('.table');
+    let sortedRows = Array.from(table.rows).slice(1).sort((rowA, rowB) => rowA.cells[datasort].innerHTML > rowB.cells[datasort].innerHTML ? 1 : -1);
+    table.tBodies[0].append(...sortedRows);
+  };
+
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
     const phoneBook = renderPhoneBook(app, title);
@@ -276,6 +283,7 @@
       formOverlay,
       form,
       btnDel,
+      table,
     } = phoneBook;
 
     // Функционал
@@ -307,6 +315,14 @@
         target.closest('.contact').remove();
       }
     });
+
+    table.addEventListener('click', e => {
+      const target = e.target;
+      if (!(target.dataset.sort === undefined)) {
+        sortData(target.dataset.sort);
+      }
+    });
+
   };
 
   window.phoneBookInit = init;
