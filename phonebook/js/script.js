@@ -256,6 +256,11 @@ const data = [{
   };
 
   const renderContacts = (elem, data) => {
+    const dataFromStorage = getStorage('data');
+
+    dataFromStorage.forEach((item) => {
+      data.push(item)
+    });
     const allRow = data.map(createRow);
     elem.append(...allRow);
     return allRow;
@@ -315,6 +320,9 @@ const data = [{
       const target = e.target;
       if (target.closest('.del-icon')) {
         target.closest('.contact').remove();
+        const deletedNumber = target.closest('.contact').children[3].children[0].textContent;
+
+        removeStorage(deletedNumber);
       }
     });
   };
@@ -329,10 +337,45 @@ const data = [{
       const formData = new FormData(e.target);
       const newContact = Object.fromEntries(formData);
 
+      setStorage('data', newContact);
+      console.log(newContact);
+
       addContactPage(newContact, list);
       addContactData(newContact);
       form.reset();
       closeModal();
+    });
+  };
+
+  const getStorage = (key) => {
+    const storageData = localStorage.getItem(key);
+
+    if (storageData === null) {
+      return [];
+    } else {
+      return JSON.parse(storageData);
+    }
+  };
+
+  const setStorage = (key, arr) => {
+    const storageData = getStorage(key);
+
+    if (JSON.stringify(storageData).includes(arr.phone)) {
+      return
+    } else {
+      storageData.push(arr);
+      localStorage.setItem(key, JSON.stringify(storageData));
+    }
+  };
+
+  const removeStorage = (string) => {
+    const dataFromStorage = getStorage('data');
+
+    dataFromStorage.forEach((item, index) => {
+      if (item.phone === string) {
+        dataFromStorage.splice(index, 1);
+      }
+      localStorage.setItem('data', JSON.stringify(dataFromStorage));
     });
   };
 
