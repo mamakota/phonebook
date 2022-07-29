@@ -1,25 +1,26 @@
 'use strict';
 
-const data = [{
-    name: 'Иван',
-    surname: 'Петров',
-    phone: '+79514545454',
-  },
-  {
-    name: 'Игорь',
-    surname: 'Семёнов',
-    phone: '+79999999999',
-  },
-  {
-    name: 'Семён',
-    surname: 'Иванов',
-    phone: '+79800252525',
-  },
-  {
-    name: 'Мария',
-    surname: 'Попова',
-    phone: '+79876543210',
-  },
+const data = [
+  // {
+  //   name: 'Иван',
+  //   surname: 'Петров',
+  //   phone: '+79514545454',
+  // },
+  // {
+  //   name: 'Игорь',
+  //   surname: 'Семёнов',
+  //   phone: '+79999999999',
+  // },
+  // {
+  //   name: 'Семён',
+  //   surname: 'Иванов',
+  //   phone: '+79800252525',
+  // },
+  // {
+  //   name: 'Мария',
+  //   surname: 'Попова',
+  //   phone: '+79876543210',
+  // },
 ];
 
 
@@ -97,8 +98,8 @@ const data = [{
     thead.insertAdjacentHTML('beforeend', `
     <tr>
       <th class="delete">Удалить</th>
-      <th data-sort="1">Имя</th>
-      <th data-sort="2">Фамилия</th>
+      <th data-sort="name">Имя</th>
+      <th data-sort="surname">Фамилия</th>
       <th>Телефон</th>
       <th></th>
     </tr>
@@ -236,11 +237,7 @@ const data = [{
 
     tdPhone.append(phoneLink);
 
-    const tdEdit = document.createElement('td'); // button edit
-    // const btnEdit = document.createElement('button');
-    // btnEdit.textContent = 'Редактировать';
-    // btnEdit.classList.add('btn', 'btn-danger');
-    // btnEdit.setAttribute('type', 'button');
+    const tdEdit = document.createElement('td');
 
     const btnEdit = createButtonsGroup([{
       className: 'btn btn-dark btn-sm',
@@ -256,11 +253,12 @@ const data = [{
   };
 
   const renderContacts = (elem, data) => {
+    // data = [];
     const dataFromStorage = getStorage('data');
-
     dataFromStorage.forEach((item) => {
       data.push(item)
     });
+
     const allRow = data.map(createRow);
     elem.append(...allRow);
     return allRow;
@@ -279,10 +277,15 @@ const data = [{
     });
   };
 
-  const sortData = (datasort) => {
-    const table = document.querySelector('.table');
-    let sortedRows = Array.from(table.rows).slice(1).sort((rowA, rowB) => rowA.cells[datasort].innerHTML > rowB.cells[datasort].innerHTML ? 1 : -1);
-    table.tBodies[0].append(...sortedRows);
+  // const sortData = (datasort) => {
+  //   const table = document.querySelector('.table');
+  //   let sortedRows = Array.from(table.rows).slice(1).sort((rowA, rowB) => rowA.cells[datasort].innerHTML > rowB.cells[datasort].innerHTML ? 1 : -1);
+  //   table.tBodies[0].append(...sortedRows);
+  // };
+
+  const sortData = (data, field) => {
+    data.sort((a, b) => a[field] > b[field] ? 1 : -1);
+    return data;
   };
 
   const modalControl = (btnAdd, formOverlay) => {
@@ -403,12 +406,15 @@ const data = [{
     deleteControl(btnDel, list);
     formControl(form, list, closeModal);
 
-    table.addEventListener('click', e => {
-      const target = e.target;
-      if (!(target.dataset.sort === undefined)) {
-        sortData(target.dataset.sort);
-      }
-    });
+    // table.addEventListener('click', e => {
+    //   const target = e.target;
+    //   if (!(target.dataset.sort === undefined)) {
+    //     const sortedData = sortData(data, target.dataset.sort);
+    //     table.tbody.innerHTML = '';
+    //     renderContacts(table.tbody, sortedData);
+    //     localStorage.setItem('sortField', target.dataset.sort)
+    //   }
+    // });
 
   };
 
