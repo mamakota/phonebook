@@ -1,33 +1,38 @@
 'use strict';
 
-const data = [
-  // {
-  //   name: 'Иван',
-  //   surname: 'Петров',
-  //   phone: '+79514545454',
-  // },
-  // {
-  //   name: 'Игорь',
-  //   surname: 'Семёнов',
-  //   phone: '+79999999999',
-  // },
-  // {
-  //   name: 'Семён',
-  //   surname: 'Иванов',
-  //   phone: '+79800252525',
-  // },
-  // {
-  //   name: 'Мария',
-  //   surname: 'Попова',
-  //   phone: '+79876543210',
-  // },
-];
-
-
 {
+  const getStorage = (key) => {
+    const storageData = localStorage.getItem(key);
+    if (storageData === null) {
+      return [];
+    } else {
+      return JSON.parse(storageData);
+    }
+  };
+
+  const setStorage = (key, arr) => {
+    if (JSON.stringify(key).includes(arr.phone)) {
+      return;
+    } else {
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+  };
+
+  const removeStorage = (string) => {
+    const dataFromStorage = getStorage('data');
+
+    dataFromStorage.forEach((item, index) => {
+      if (item.phone === string) {
+        dataFromStorage.splice(index, 1);
+      }
+      localStorage.setItem('data', JSON.stringify(dataFromStorage));
+    });
+  };
+
   const addContactData = (contact) => {
+    const data = getStorage('data');
     data.push(contact);
-    console.log(data);
+    setStorage('data', data);
   };
 
   const createContainer = () => {
@@ -192,7 +197,7 @@ const data = [
     const table = createTable();
     const {
       form,
-      overlay
+      overlay,
     } = createForm();
     const footer = createFooter(title);
 
@@ -253,12 +258,6 @@ const data = [
   };
 
   const renderContacts = (elem, data) => {
-    // data = [];
-    const dataFromStorage = getStorage('data');
-    dataFromStorage.forEach((item) => {
-      data.push(item)
-    });
-
     const allRow = data.map(createRow);
     elem.append(...allRow);
     return allRow;
@@ -277,19 +276,12 @@ const data = [
     });
   };
 
-  // const sortData = (datasort) => {
-  //   const table = document.querySelector('.table');
-  //   let sortedRows = Array.from(table.rows).slice(1).sort((rowA, rowB) => rowA.cells[datasort].innerHTML > rowB.cells[datasort].innerHTML ? 1 : -1);
-  //   table.tBodies[0].append(...sortedRows);
-  // };
-
   const sortData = (data, field) => {
     data.sort((a, b) => a[field] > b[field] ? 1 : -1);
     return data;
   };
 
   const modalControl = (btnAdd, formOverlay) => {
-
     const openMidal = () => {
       formOverlay.classList.add('is-visible');
     };
@@ -340,9 +332,6 @@ const data = [
       const formData = new FormData(e.target);
       const newContact = Object.fromEntries(formData);
 
-      setStorage('data', newContact);
-      console.log(newContact);
-
       addContactPage(newContact, list);
       addContactData(newContact);
       form.reset();
@@ -350,41 +339,9 @@ const data = [
     });
   };
 
-  const getStorage = (key) => {
-    const storageData = localStorage.getItem(key);
-
-    if (storageData === null) {
-      return [];
-    } else {
-      return JSON.parse(storageData);
-    }
-  };
-
-  const setStorage = (key, arr) => {
-    const storageData = getStorage(key);
-
-    if (JSON.stringify(storageData).includes(arr.phone)) {
-      return
-    } else {
-      storageData.push(arr);
-      localStorage.setItem(key, JSON.stringify(storageData));
-    }
-  };
-
-  const removeStorage = (string) => {
-    const dataFromStorage = getStorage('data');
-
-    dataFromStorage.forEach((item, index) => {
-      if (item.phone === string) {
-        dataFromStorage.splice(index, 1);
-      }
-      localStorage.setItem('data', JSON.stringify(dataFromStorage));
-    });
-  };
-
   const init = (selectorApp, title) => {
     const app = document.querySelector(selectorApp);
-
+    const data = getStorage('data');
     const {
       list,
       logo,
@@ -399,23 +356,23 @@ const data = [
 
     const allRow = renderContacts(list, data);
     const {
-      closeModal
+      closeModal,
     } = modalControl(btnAdd, formOverlay);
 
     hoverRow(allRow, logo);
     deleteControl(btnDel, list);
     formControl(form, list, closeModal);
 
-    // table.addEventListener('click', e => {
-    //   const target = e.target;
-    //   if (!(target.dataset.sort === undefined)) {
-    //     const sortedData = sortData(data, target.dataset.sort);
-    //     table.tbody.innerHTML = '';
-    //     renderContacts(table.tbody, sortedData);
-    //     localStorage.setItem('sortField', target.dataset.sort)
-    //   }
-    // });
-
+    table.addEventListener('click', e => {
+      const target = e.target;
+      if (!(target.dataset.sort === undefined)) {
+        const sortedData = sortData((getStorage('data')), target.dataset.sort);
+        console.log(sortedData);
+        table.tbody.innerHTML = '';
+        renderContacts(table.tbody, sortedData);
+        localStorage.setItem('data', JSON.stringify(sortedData));
+      }
+    });
   };
 
   window.phoneBookInit = init;
