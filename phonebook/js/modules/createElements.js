@@ -143,7 +143,7 @@ const createFooter = (title) => {
   return footer;
 };
 
-const createRow = ({
+export const createRow = ({
   name: firstName,
   surname,
   phone,

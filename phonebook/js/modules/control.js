@@ -4,11 +4,11 @@ const {
   addContactData,
 } = serviceStorage;
 
-import createElements from './createElements.js';
+import * as createElements from './createElements.js';
 
-const {
-  createRow,
-} = createElements;
+// const {
+//   createRow,
+// } = createElements;
 
 
 const hoverRow = (allRow, logo) => {
@@ -71,7 +71,7 @@ const deleteControl = (btnDel, list) => {
 };
 
 const addContactPage = (contact, list) => {
-  list.append(createRow(contact));
+  list.append(createElements.createRow(contact));
 };
 
 const formControl = (form, list, closeModal) => {
